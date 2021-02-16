@@ -4,9 +4,7 @@ import org.springframework.stereotype.Component;
 import ru.geekbrains.spring.lesson1h.Product;
 
 import javax.annotation.PostConstruct;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 @Component
 public class ProductInMemoryRepository implements ProductRepository {
@@ -24,7 +22,7 @@ public class ProductInMemoryRepository implements ProductRepository {
 
     @Override
     public List<Product> getProducts() {
-        return products;
+        return Collections.unmodifiableList(products);
     }
 
     public void addProduct(Product product) {
