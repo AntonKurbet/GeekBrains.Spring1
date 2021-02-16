@@ -13,9 +13,6 @@ import java.util.Optional;
 public class ProductService {
     private ProductRepository productRepository;
 
-    @Value("12121-232323-45454545")
-    private String identifier;
-
     public ProductService(ProductRepository productRepository) {
         this.productRepository = productRepository;
     }
