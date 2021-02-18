@@ -1,3 +1,5 @@
+package ru.geekbrains.spring.lesson1h;
+
 import lombok.Data;
 
 @Data
