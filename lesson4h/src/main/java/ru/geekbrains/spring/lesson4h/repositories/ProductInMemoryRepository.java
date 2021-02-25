@@ -1,6 +1,7 @@
 package ru.geekbrains.spring.lesson4h.repositories;
 
 import org.springframework.stereotype.Component;
+import ru.geekbrains.spring.lesson4h.exceptions.ResourceAllreadyExistException;
 import ru.geekbrains.spring.lesson4h.models.Product;
 
 import javax.annotation.PostConstruct;
@@ -28,9 +29,9 @@ public class ProductInMemoryRepository implements ProductRepository {
         return Collections.unmodifiableList(products);
     }
 
-    public void addProduct(Product product) {
+    public void addProduct(Product product) throws ResourceAllreadyExistException{
         if (getProduct(product.getId()).isPresent())
-            throw new RuntimeException("This id already used");
+            throw new ResourceAllreadyExistException("This id already used");
         products.add(product);
     }
 

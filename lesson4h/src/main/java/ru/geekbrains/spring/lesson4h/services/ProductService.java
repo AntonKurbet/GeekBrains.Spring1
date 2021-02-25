@@ -1,6 +1,7 @@
 package ru.geekbrains.spring.lesson4h.services;
 
 import org.springframework.stereotype.Component;
+import ru.geekbrains.spring.lesson4h.exceptions.ResourceAllreadyExistException;
 import ru.geekbrains.spring.lesson4h.exceptions.ResourceNotFoundException;
 import ru.geekbrains.spring.lesson4h.models.Product;
 import ru.geekbrains.spring.lesson4h.repositories.ProductRepository;
@@ -26,7 +27,7 @@ public class ProductService {
         return productRepository.getProducts();
     }
 
-    public void addProduct(Product p) {
+    public void addProduct(Product p) throws ResourceAllreadyExistException {
         productRepository.addProduct(p);
     }
 
