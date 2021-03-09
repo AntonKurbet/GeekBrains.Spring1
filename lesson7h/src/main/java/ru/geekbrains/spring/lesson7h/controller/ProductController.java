@@ -1,6 +1,7 @@
 package ru.geekbrains.spring.lesson7h.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.*;
 import ru.geekbrains.spring.lesson7h.model.Product;
 import ru.geekbrains.spring.lesson7h.services.ProductService;
@@ -15,9 +16,28 @@ public class ProductController {
     @Autowired
     private ProductService productService;
 
+//    @GetMapping
+//    public List<Product> getAll(
+//            @RequestParam(defaultValue = "1") Integer page,
+//            @RequestParam(defaultValue = "10") Integer size,
+//            @RequestParam SortOrder sortCost,
+//            @RequestParam SortOrder sortTitle) {
+//        return productService.getAll(page - 1, size, Optional.of(sortCost), Optional.of(sortTitle));
+//    }
+
     @GetMapping
-    public List<Product> getAll(@RequestParam Optional<Long> minCost, @RequestParam Optional<Long> maxCost) {
-        return productService.getAll(minCost, maxCost);
+    public List<Product> getAll(
+            @RequestParam(defaultValue = "1") Integer page,
+            @RequestParam(defaultValue = "10") Integer size,
+            @RequestParam(value = "sort") String[] sort) {
+        return productService.getAll(page - 1, size, Optional.of(sort));
+    }
+
+    @GetMapping("/bycost")
+    public List<Product> getAll(
+            @RequestParam Optional<Long> minCost,
+            @RequestParam Optional<Long> maxCost) {
+        return productService.getAllByCost(minCost, maxCost);
     }
 
     @GetMapping("/find")

@@ -21,10 +21,10 @@ public class Product {
     @Column(name = "cost")
     private Long cost;
 
-//    public Product(String title, Long cost) {
-//        this.title = title;
-//        this.cost = cost;
-//    }
+    public Product(String title, Long cost) {
+        this.title = title;
+        this.cost = cost;
+    }
 //
 //    public String toString() {
 //        return String.format("Product [id = %d, title = %s, cost = %d]", id, title, cost);
