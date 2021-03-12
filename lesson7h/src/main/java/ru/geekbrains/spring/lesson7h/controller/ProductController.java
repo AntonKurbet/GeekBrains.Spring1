@@ -2,52 +2,37 @@ package ru.geekbrains.spring.lesson7h.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import ru.geekbrains.spring.lesson7h.model.Product;
+import ru.geekbrains.spring.lesson7h.exceptions.InvalidPageException;
+import ru.geekbrains.spring.lesson7h.exceptions.ProductErrorResponse;
+import ru.geekbrains.spring.lesson7h.exceptions.ProductNotFoundException;
+import ru.geekbrains.spring.lesson7h.model.entities.Product;
+import ru.geekbrains.spring.lesson7h.model.dtos.ProductDto;
 import ru.geekbrains.spring.lesson7h.services.ProductService;
 
-import java.util.List;
 import java.util.Optional;
 
 @RestController
-@RequestMapping("/products")
+@RequestMapping("/api/v1/products")
 public class ProductController {
 
     @Autowired
     private ProductService productService;
 
-//    @GetMapping
-//    public List<Product> getAll(
-//            @RequestParam(defaultValue = "1") Integer page,
-//            @RequestParam(defaultValue = "10") Integer size,
-//            @RequestParam SortOrder sortCost,
-//            @RequestParam SortOrder sortTitle) {
-//        return productService.getAll(page - 1, size, Optional.of(sortCost), Optional.of(sortTitle));
-//    }
-
     @GetMapping
-    public List<Product> getAll(
+    public Page<ProductDto> getAll(
             @RequestParam(defaultValue = "1") Integer page,
             @RequestParam(defaultValue = "10") Integer size,
-            @RequestParam(value = "sort") String[] sort) {
+            @RequestParam(defaultValue = "") String[] sort) {
+        if (page < 1) throw new InvalidPageException(page.toString());
         return productService.getAll(page - 1, size, Optional.of(sort));
     }
 
-    @GetMapping("/bycost")
-    public List<Product> getAll(
-            @RequestParam Optional<Long> minCost,
-            @RequestParam Optional<Long> maxCost) {
-        return productService.getAllByCost(minCost, maxCost);
-    }
-
-    @GetMapping("/find")
-    public List<Product> getAll(@RequestParam Optional<String> titlePart) {
-        return productService.getAllByNamePart(titlePart);
-    }
-
     @GetMapping("/{id}")
-    public Product getById(@PathVariable Long id) {
-        return productService.getById(id);
+    public ProductDto getById(@PathVariable Long id) {
+        return productService.getById(id).orElseThrow(() -> new ProductNotFoundException(id.toString()));
     }
 
     @GetMapping("/title")
@@ -56,12 +41,28 @@ public class ProductController {
     }
 
     @PostMapping
-        public Product add(@RequestBody Product product) {
+    @ResponseStatus(HttpStatus.CREATED)
+    public Product add(@RequestBody Product product) {
+        product.setId(null);
         return productService.add(product);
+    }
+
+    @PutMapping
+    public Product update(@RequestBody Product product) {
+        return productService.saveOrUpdate(product);
     }
 
     @DeleteMapping("/{id}")
     public void delete(@PathVariable Long id) {
         productService.delete(id);
+    }
+
+    @ExceptionHandler
+    public ResponseEntity<ProductErrorResponse> handleException(ProductNotFoundException e) {
+        ProductErrorResponse per = new ProductErrorResponse();
+        per.setStatus(HttpStatus.NOT_FOUND.value());
+        per.setMessage(e.getMessage());
+        per.setTimestamp(System.currentTimeMillis());
+        return new ResponseEntity<>(per,HttpStatus.NOT_FOUND);
     }
 }
